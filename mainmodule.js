@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import {View, Text, TouchableOpacity, TextInput, StyleSheet} from 'react-native'
+import {View, Text, TouchableOpacity, TextInput, StyleSheet, Image} from 'react-native'
 
-class Videosearch extends Component {
+class Mainmodule extends Component {
     state = {
-        search_text: '',
+        image_list: [],
     }
     handleSearchText = (text) => {
         this.setState({search_text: text})
@@ -20,14 +20,20 @@ class Videosearch extends Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                // console.log(responseJson);
+                console.log(responseJson);
 
-                var data=responseJson['items']
-                // console.log(data)
+                var data = responseJson['items']
+                console.log(data)
 
-                for(var i=0;i<data.length;i++){
-                    var play_list_title=data[i]['snippet']['localized']['title']
+                for (var i = 0; i < data.length; i++) {
+                    var play_list_title = data[i]['snippet']['localized']['title']
+                    var image_url = data[i]['snippet']['thumbnails']['default']['url']
                     console.log(play_list_title)
+                    console.log(image_url)
+                    this.setState(state => {
+                        const list = state.image_list.push({id:i,url:image_url})
+                    })
+                    console.log(this.state.image_list)
                 }
 
                 this.setState({
@@ -56,8 +62,20 @@ class Videosearch extends Component {
                     <Text style={styles.submitButtonText}> Get videos </Text>
                 </TouchableOpacity>
 
+                {
+                    this.state.image_list.map((item) => (
+                        <TouchableOpacity
+                            key={item.id}
+                            style={styles.container}
+                            >
 
+                            <Image style={styles.stretch}
+                                   source={{uri: item.url.toString()}}>
 
+                            </Image>
+                        </TouchableOpacity>
+                    ))
+                }
 
 
             </View>
@@ -65,7 +83,8 @@ class Videosearch extends Component {
     }
 }
 
-export default Videosearch
+export default Mainmodule
+
 
 const styles = StyleSheet.create({
     container: {
@@ -85,5 +104,12 @@ const styles = StyleSheet.create({
     },
     submitButtonText: {
         color: 'white'
+    },
+    stretch: {
+        width: 200,
+        height: 200,
+        resizeMode: 'stretch'
     }
 })
+
+
